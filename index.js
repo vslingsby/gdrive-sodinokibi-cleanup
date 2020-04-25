@@ -15,24 +15,31 @@ const ENCRYPT_STRING = '32ry650';
 
 fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
-  authorize(JSON.parse(content), doThing);
+  authorize(JSON.parse(content), fixGoogleDrive);
 });
 
 /////////////////////////////////////////////////////////////////////////////
 
-/*
-async function fixGoogleDrive(auth, string) {
+async function fixGoogleDrive(auth) {
   const drive = google.drive({version: 'v3', auth});
-  fixBinaryFiles(drive, string);
-  fixGoogleDocs(drive);
-  deleteReadmes(drive, string);
-
+  let gdocsDone = false;
+  let binaryDone = false;
+  while (gdocsDone != true || binaryDone != true) {
+    if (gdocsDone != true) {
+      gdocsDone = await fixGoogleDocs(drive);
+    }
+    if (binaryDone != true) {
+      binaryDone = await fixBinaryFiles(drive,ENCRYPT_STRING);
+    }
+    await sleep(10000);
+  }
+  console.log('Done!');
 }
-*/
-async function doThing(auth) {
-  const drive = google.drive({version: 'v3', auth});
-  fixGoogleDocs(drive);
-  //fixBinaryFiles(drive,ENCRYPT_STRING);
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 /////////////////  AUTH  //////////////////////////////////////////////////////

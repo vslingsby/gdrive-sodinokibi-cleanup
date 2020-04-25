@@ -6,26 +6,32 @@ async function fixBinaryFiles(drive, string) {
   let fileList = [];
   fileList = await getBinaryFiles(drive, string);
   console.log(`${fileList.length} bad Binary Files found`)
-  await asyncForEach(fileList, async (file) => {
+  if (fileList && fileList.length > 0) {
+    await asyncForEach(fileList, async (file) => {
 
-    let revision = await getBadRevision(drive, file.id);
-    if (revision && revision == file.headRevisionId) {
-      console.log(`Deleting ${file.name} revision ${revision}`)
-      deleteRevision(drive, file.id, revision);
-    } else console.log(`No revision for ${file.name}, skipping`);
-    let fixedName = file.name.replace('.' + string, '');
-    console.log("Updating " + file.name + ' --> ' + fixedName);
-    updateFileName(drive, file.id, fixedName);
-  });
+      let revision = await getBadRevision(drive, file.id);
+      if (revision && revision == file.headRevisionId) {
+        console.log(`Deleting ${file.name} revision ${revision}`)
+        deleteRevision(drive, file.id, revision);
+      } else console.log(`No revision for ${file.name}, skipping`);
+      let fixedName = file.name.replace('.' + string, '');
+      console.log("Updating " + file.name + ' --> ' + fixedName);
+      updateFileName(drive, file.id, fixedName);
+    });
+    return false;
+  } else {
+    console.log('Binaries done!');
+    return true; //done
+  }
 }
 
 async function getBinaryFiles(drive, string) { //"modifiedTime": "2020-04-14T12:40:59.000Z"
   let fileList = [];
   const res =  await drive.files.list({
-    q: `name contains '.${string}' and modifiedTime > '2020-04-14T12:00:00' and modifiedTime < '2020-04-14T17:00:00'
-    and not name contains '${string}-readme' and fileExtension = '32ry' and trashed = false`,
+    q: `name contains '.${string}'
+    and not name contains '${string}-readme' and trashed = false and fileExtension = '32ry'`,
     fields: `files(id,name,headRevisionId)`,
-    pageSize: 20
+    pageSize: 10
   });
   const files = res.data.files;
   if (files.length) {
