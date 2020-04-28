@@ -1,6 +1,7 @@
 const {google} = require('googleapis');
 asyncForEach = require('./asyncforeach.js');
 updateFileName = require('./updatefilename.js');
+deleteRevision = require('./deleterevision.js');
 
 async function fixBinaryFiles(drive, string) {
   let fileList = [];
@@ -60,13 +61,6 @@ async function getBadRevision(drive, fileId) {
     });
     return badRevision;
   }
-}
-
-async function deleteRevision(drive, fileId, revisionId) {
-  const res = await drive.revisions.delete({
-    fileId: fileId,
-    revisionId: revisionId
-  });
 }
 
 module.exports = fixBinaryFiles;

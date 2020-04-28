@@ -1,10 +1,11 @@
 {
   "name": "gdrive-sodinokibi-cleanup",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Script that cleans up a backup-and-sync enabled Google Drive",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
